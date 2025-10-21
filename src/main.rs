@@ -27,13 +27,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
     let runtime = get_container_runtime();
-    println!("Menggunakan: {}", runtime);
-    println!("Mengambil statistik resource...\n");
+    println!("Using: {}", runtime);
+    println!("Getting resource statistic...\n");
 
     let stats = fetch_container_stats(&runtime)?;
 
     if stats.is_empty() {
-        println!("Tidak ada container yang sedang berjalan");
+        println!("No container running!");
         return Ok(());
     }
 
