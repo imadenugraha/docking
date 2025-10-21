@@ -192,6 +192,57 @@ fn print_stats_table(stats: &[ContainerStats]) {
     println!("╚════════════════╩═══════════╩════════════╩══════════╩═══════════╝");
 }
 
-fn main() {
-    println!("Hello, world!");
+fn print_stats_json(stats: &[ContainerStats]) {
+    let json_output = json!(stats);
+    println!("{}", serde_json::to_string_pretty(&json_output).unwrap());
+}
+
+fn print_stats_detailed(stats: &[ContainerStats]) {
+    for stat in stats {
+        println!("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        println!("Container: {} ({})", stat.container_name, stat.container_id);
+        println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        println!("CPU Usage:        {:.2}%", stat.cpu_percent);
+        println!(
+            "Memory Usage:     {:.2} MB / {:.2} MB ({:.2}%)",
+            stat.memory_usage_mb, stat.memory_limit_mb, stat.memory_percent
+        );
+        println!(
+            "Network I/O:      ↓ {:.2} MB (input) | ↑ {:.2} MB (output)",
+            stat.net_input_mb, stat.net_output_mb
+        );
+        println!(
+            "Block I/O:        ↓ {:.2} MB (read) | ↑ {:.2} MB (write)",
+            stat.io_read_mb, stat.io_write_mb
+        );
+    }
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args: Vec<String> = std::env::args().collect();
+
+    let format = if args.len() > 1 {
+        args[1].as_str()
+    } else {
+        "table"
+    };
+
+    let runtime = get_container_runtime();
+    println!("Menggunakan: {}", runtime);
+    println!("Mengambil statistik resource...\n");
+
+    let stats = fetch_container_stats(&runtime)?;
+
+    if stats.is_empty() {
+        println!("Tidak ada container yang sedang berjalan");
+        return Ok(());
+    }
+
+    match format {
+        "json" => print_stats_json(&stats),
+        "detailed" => print_stats_detailed(&stats),
+        "table" | _ => print_stats_table(&stats),
+    }
+
+    Ok(())
 }
