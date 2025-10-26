@@ -73,7 +73,7 @@ pub fn fetch_container_stats(runtime: &str) -> Result<Vec<ContainerStats>, Box<d
             .take(12)
             .collect();
 
-        let container_name = stat["Names"]
+        let container_name = stat["Name"]
             .as_array()
             .and_then(|arr| arr.first())
             .and_then(|v| v.as_str())
