@@ -73,12 +73,7 @@ pub fn fetch_container_stats(runtime: &str) -> Result<Vec<ContainerStats>, Box<d
             .take(12)
             .collect();
 
-        let container_name = stat["Name"]
-            .as_array()
-            .and_then(|arr| arr.first())
-            .and_then(|v| v.as_str())
-            .unwrap_or("unknown")
-            .to_string();
+        let container_name = stat["Name"].to_string();
 
         let cpu_str = stat["CPUPerc"].as_str().unwrap_or("0%");
         let mem_usage = stat["MemUsage"].as_str().unwrap_or("0M");
