@@ -4,7 +4,7 @@ mod parsing;
 mod utils;
 
 use output::{print_stats_detailed, print_stats_json, print_stats_table};
-use utils::{fetch_container_stats, get_container_runtime};
+use utils::fetch_container_stats;
 use clap::{Parser, ValueEnum};
 
 #[derive(ValueEnum, Debug, Clone)]
@@ -20,17 +20,19 @@ enum OutputType {
 #[command(version, about, long_about = None)]
 struct Args {
     #[arg(value_enum, default_value = "table")]
-    output: OutputType
+    output: OutputType,
+
+    #[arg(short, long, default_value = "docker")]
+    runtime: String
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
 
-    let runtime = get_container_runtime();
-    println!("Using: {}", runtime);
+    println!("Using: {}", args.runtime);
     println!("Getting resource statistic...\n");
 
-    let stats = fetch_container_stats(&runtime)?;
+    let stats = fetch_container_stats(&args.runtime)?;
 
     if stats.is_empty() {
         println!("No container running!");
