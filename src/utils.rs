@@ -2,29 +2,6 @@ use std::process::Command;
 use crate::stats::ContainerStats;
 use crate::parsing::{parse_size_value, parse_percent_value};
 
-pub fn get_container_runtime() -> String {
-    let docker_check = Command::new("docker")
-        .arg("--version")
-        .output();
-
-    match docker_check {
-        Ok(_) => "docker".to_string(),
-        Err(_) => {
-            let podman_check = Command::new("podman")
-                .arg("--version")
-                .output();
-
-            match podman_check {
-                Ok(_) => "podman".to_string(),
-                Err(_) => {
-                    eprintln!("Error: Docker or podman not exist!");
-                    std::process::exit(1);
-                }
-            }
-        }
-    }
-}
-
 pub fn fetch_container_stats(runtime: &str) -> Result<Vec<ContainerStats>, Box<dyn std::error::Error>> {
     let output = Command::new(runtime)
         .arg("stats")
