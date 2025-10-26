@@ -41,7 +41,27 @@ pub fn fetch_container_stats(runtime: &str) -> Result<Vec<ContainerStats>, Box<d
 
     let stdout = String::from_utf8(output.stdout)?;
 
-    let stats: Vec<serde_json::Value> = serde_json::from_str(&stdout)?;
+    let stats: Vec<serde_json::Value> = match serde_json::from_str(&stdout) {
+        Ok(arr) => arr,
+        Err(_) => {
+            if let Ok(v) = serde_json::from_str(&stdout) {
+                match v {
+                    serde_json::Value::Array(arr) => arr,
+                    serde_json::Value::Object(_) => vec![v],
+                    _ => Vec::new(),
+                }
+            } else {
+                let mut arr = Vec::new();
+                for line in stdout.lines() {
+                    let line = line.trim();
+                    if line.is_empty() { continue; }
+                    let v: serde_json::Value = serde_json::from_str(line)?;
+                    arr.push(v);
+                }
+                arr
+            }
+        }
+    };
 
     let mut container_stats = Vec::new();
 
