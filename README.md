@@ -17,6 +17,8 @@ Docking is a simple Rust CLI tool to monitor resource usage (CPU, memory, networ
 
 ## Usage
 
+### 1. Using Cargo
+
 Build the project with Cargo:
 
 ```sh
@@ -35,6 +37,32 @@ You can specify the output format as the first argument:
 ./target/release/docking table      # Table view (default)
 ./target/release/docking json       # JSON output
 ./target/release/docking detailed   # Detailed per-container output
+```
+
+### 2. Using Make
+
+Build based on your environment:
+
+release:
+```sh
+make install-release
+```
+
+debug:
+```sh
+make install-debug
+```
+
+Run the tool (default output is a table):
+
+release:
+```sh
+./usr/bin/docking
+```
+
+debug:
+```sh
+./docking
 ```
 
 ## Example Output
