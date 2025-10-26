@@ -27,6 +27,7 @@ pub fn get_container_runtime() -> String {
 
 pub fn fetch_container_stats(runtime: &str) -> Result<Vec<ContainerStats>, Box<dyn std::error::Error>> {
     let output = Command::new(runtime)
+        .arg("stats")
         .arg("--no-stream")
         .arg("--format=json")
         .arg("--all")
